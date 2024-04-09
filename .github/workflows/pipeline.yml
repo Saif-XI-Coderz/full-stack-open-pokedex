@@ -35,14 +35,13 @@ jobs:
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
   tag_release:
     needs: [simple_deployment_pipeline]
+    if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message), '#skip') }}
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
-        if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message), '#skip') }}
         with:
           fetch-depth: '0'
       - name: Bump version and push tag
-        if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message), '#skip') }}
         uses: anothrNick/github-tag-action@1.67.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -63,19 +62,21 @@ jobs:
           NEEDS_CONTEXT: ${{ toJson(needs) }}
       - name: Notify success
         uses: rjstone/discord-webhook-notify@v1
-        if: ${{ success() }}
+        if: ${{ needs.simple_deployment_pipeline.result == 'success' }}
         with:
           severity: info
           username: PokedexCI
+          avatarUrl: https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png
           text: A new version of Pokedex deployed
           description: On Render
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: Notify failure
         uses: rjstone/discord-webhook-notify@v1
-        if: ${{ failure() }}
+        if: ${{ needs.simple_deployment_pipeline.result == 'failure' }}
         with:
           severity: error
           username: PokedexCI
+          avatarUrl: https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png
           text: Build failed
           description: commit ${{ github.sha }} broke the build
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
