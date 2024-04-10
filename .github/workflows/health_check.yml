@@ -10,9 +10,17 @@ jobs:
   health_check:
     runs-on: ubuntu-22.04
     steps:
+      - name: env context
+        run: echo "$ENV_CONTEXT"
+        env:
+          ENV_CONTEXT: ${{ toJson(env) }}
+      - name: vars context
+        run: echo "$VARS_CONTEXT"
+        env:
+          VARS_CONTEXT: ${{ toJson(vars) }}
       - name: Check production instance
         uses: jtalk/url-health-check-action@v4
         with:
-          url: ${{ secrets.APP_URL }}
+          url: https://full-stack-open-pokedex-71h9.onrender.com/
           max-attempts: 3
           retry-delay: 5s
