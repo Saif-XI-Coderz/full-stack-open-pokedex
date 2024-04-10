@@ -51,25 +51,24 @@ jobs:
     if: ${{ always() }}
     runs-on: ubuntu-20.04
     steps:
+      - uses: actions/checkout@v4
+      - name: github context
+        run: echo "$GITHUB_CONTEXT"
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+      - name: needs context
+        run: echo "$NEEDS_CONTEXT"
+        env:
+          NEEDS_CONTEXT: ${{ toJson(needs) }}
       - name: Notify success
         uses: rjstone/discord-webhook-notify@v1
-        if: ${{ needs.simple_deployment_pipeline.result == 'success' }}
+        if: ${{ needs.simple_deployment_pipeline.result == 'success' && needs.tag_release.result == 'success' }}
         with:
           severity: info
           username: PokedexCI
           avatarUrl: https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png
           text: A new version of Pokedex deployed
           description: On Render 🎉🎉 💯
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-      - name: Notify deployment skipped
-        uses: rjstone/discord-webhook-notify@v1
-        if: ${{ needs.simple_deployment_pipeline.result == 'success' && needs.tag_release.result == 'skipped' }}
-        with:
-          severity: info
-          username: PokedexCI
-          avatarUrl: https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png
-          text: Build succeeded, but deployment was skipped
-          description: Deployment of commit **${{ github.sha }}** was skipped
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: Notify failure
         uses: rjstone/discord-webhook-notify@v1
@@ -79,5 +78,5 @@ jobs:
           username: PokedexCI
           avatarUrl: https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png
           text: Build failed
-          description: commit **${{ github.sha }}** broke the build 😓
+          description: commit **${{ github.event.after }}** broke the build 😓
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
