@@ -57,7 +57,7 @@ jobs:
           NEEDS_CONTEXT: ${{ toJson(needs) }}
       - name: Notify success
         uses: rjstone/discord-webhook-notify@v1
-        if: ${{ needs.simple_deployment_pipeline.result == 'success' }}
+        if: ${{ needs.simple_deployment_pipeline.result == 'success' && needs.tag_release.result == 'success' }}
         with:
           severity: info
           username: PokedexCI
@@ -65,7 +65,7 @@ jobs:
           text: A new version of Pokedex deployed
           description: On Render 🎉🎉 💯
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-      - name: Notify deployment skipped
+      - name: Notify deployment skipped # runs even when PRs are opned
         uses: rjstone/discord-webhook-notify@v1
         if: ${{ needs.simple_deployment_pipeline.result == 'success' && needs.tag_release.result == 'skipped' }}
         with:
