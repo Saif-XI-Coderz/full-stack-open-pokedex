@@ -70,16 +70,6 @@ jobs:
           text: A new version of Pokedex deployed
           description: On Render 🎉🎉 💯
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-      - name: Notify deployment skipped # runs even when PRs are opned
-        uses: rjstone/discord-webhook-notify@v1
-        if: ${{ needs.simple_deployment_pipeline.result == 'success' && needs.tag_release.result == 'skipped' }}
-        with:
-          severity: info
-          username: PokedexCI
-          avatarUrl: https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png
-          text: Build succeeded, but deployment was skipped
-          description: Deployment of commit **${{ github.sha }}** was skipped
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: Notify failure
         uses: rjstone/discord-webhook-notify@v1
         if: ${{ needs.simple_deployment_pipeline.result == 'failure' }}

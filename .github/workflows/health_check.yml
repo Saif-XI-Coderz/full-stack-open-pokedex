@@ -21,6 +21,6 @@ jobs:
       - name: Check production instance
         uses: jtalk/url-health-check-action@v4
         with:
-          url: https://full-stack-open-pokedex-71h9.onrender.com/
+          url: ${{ vars.APP_URL }}
           max-attempts: 3
           retry-delay: 5s
