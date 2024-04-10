@@ -78,5 +78,5 @@ jobs:
           username: PokedexCI
           avatarUrl: https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png
           text: Build failed
-          description: commit **${{ github.sha }}** broke the build 😓
+          description: commit **${{ github.event.after }}** broke the build 😓
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
