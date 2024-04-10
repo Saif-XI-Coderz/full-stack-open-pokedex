@@ -51,6 +51,15 @@ jobs:
     if: ${{ always() }}
     runs-on: ubuntu-20.04
     steps:
+      - uses: actions/checkout@v4
+      - name: github context
+        run: echo "$GITHUB_CONTEXT"
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+      - name: needs context
+        run: echo "$NEEDS_CONTEXT"
+        env:
+          NEEDS_CONTEXT: ${{ toJson(needs) }}
       - name: Notify success
         uses: rjstone/discord-webhook-notify@v1
         if: ${{ needs.simple_deployment_pipeline.result == 'success' && needs.tag_release.result == 'success' }}
